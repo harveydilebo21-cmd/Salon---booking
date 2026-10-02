@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Book an appointment</title>
+    <style>
+        body { font-family: sans-serif; max-width: 420px; margin: 2rem auto; padding: 0 1rem; }
+        label { display: block; margin-top: 1rem; }
+        input, select { width: 100%; padding: .5rem; box-sizing: border-box; }
+        button { margin-top: 1.5rem; padding: .7rem 1.2rem; }
+        .error { color: #b00020; font-size: .85rem; }
+    </style>
+</head>
+<body>
+<h1>Book an appointment</h1>
+
+<form th:action="@{/book}" th:object="${bookingForm}" method="post">
+
+    <label>Your name
+        <input type="text" th:field="*{clientName}">
+    </label>
+    <div class="error" th:if="${#fields.hasErrors('clientName')}" th:errors="*{clientName}"></div>
+
+    <label>Phone
+        <input type="tel" th:field="*{phone}">
+    </label>
+    <div class="error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+
+    <label>Service
+        <select th:field="*{service}">
+            <option value="">Choose a service</option>
+            <option th:each="s : ${services}" th:value="${s}" th:text="${s}"></option>
+        </select>
+    </label>
+    <div class="error" th:if="${#fields.hasErrors('service')}" th:errors="*{service}"></div>
+
+    <label>Preferred date and time
+        <input type="datetime-local" th:field="*{requestedTime}">
+    </label>
+    <div class="error" th:if="${#fields.hasErrors('requestedTime')}" th:errors="*{requestedTime}"></div>
+
+    <button type="submit">Request booking</button>
+</form>
+</body>
+</html>
