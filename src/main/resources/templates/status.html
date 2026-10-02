@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Your booking</title>
+</head>
+<body style="font-family: sans-serif; max-width: 420px; margin: 2rem auto; padding: 0 1rem;">
+<h1>Your booking</h1>
+<p><strong th:text="${booking.clientName}"></strong> - <span th:text="${booking.service}"></span></p>
+<p>Requested: <span th:text="${#temporals.format(booking.requestedTime, 'EEE d MMM yyyy, HH:mm')}"></span></p>
+<p>Status: <strong th:text="${booking.status}"></strong></p>
+<p th:if="${booking.stylistNote}">Note from the salon: <span th:text="${booking.stylistNote}"></span></p>
+<p>Bookmark this page to check back later.</p>
+<p><a th:href="@{/}">Back to home</a></p>
+</body>
+</html>
