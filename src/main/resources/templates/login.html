@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Stylist login</title>
+    <style>
+        body { font-family: sans-serif; max-width: 420px; margin: 2rem auto; padding: 0 1rem; }
+        label { display: block; margin-top: 1rem; }
+        input { width: 100%; padding: .5rem; box-sizing: border-box; }
+        button { margin-top: 1.5rem; padding: .7rem 1.2rem; }
+        .error { color: #b00020; }
+    </style>
+</head>
+<body>
+<h1>Stylist login</h1>
+<p class="error" th:if="${param.error}">Wrong username or password.</p>
+<form th:action="@{/login}" method="post">
+    <label>Username <input type="text" name="username" autofocus></label>
+    <label>Password <input type="password" name="password"></label>
+    <button type="submit">Log in</button>
+</form>
+</body>
+</html>
