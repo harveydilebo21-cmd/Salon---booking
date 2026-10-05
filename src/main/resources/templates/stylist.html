@@ -4,11 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Stylist dashboard</title>
+    <style>
+        body { font-family: sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+        .table-wrap { overflow-x: auto; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { text-align: left; padding: .5rem; border-bottom: 1px solid #ddd; }
+        .muted { color: #666; }
+    </style>
 </head>
-<body style="font-family: sans-serif; max-width: 420px; margin: 2rem auto; padding: 0 1rem;">
+<body>
 <h1>Stylist dashboard</h1>
-<p>Booking requests will appear here on Day 7.</p>
-<form th:action="@{/logout}" method="post">
+
+<h2>Pending requests</h2>
+<p class="muted" th:if="${#lists.isEmpty(pending)}">No pending requests.</p>
+<div class="table-wrap" th:unless="${#lists.isEmpty(pending)}">
+    <table>
+        <thead>
+        <tr><th>When</th><th>Client</th><th>Phone</th><th>Service</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="b : ${pending}">
+            <td th:text="${#temporals.format(b.requestedTime, 'EEE d MMM yyyy, HH:mm')}"></td>
+            <td th:text="${b.clientName}"></td>
+            <td th:text="${b.phone}"></td>
+            <td th:text="${b.service}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<h2>Other bookings</h2>
+<p class="muted" th:if="${#lists.isEmpty(others)}">Nothing here yet.</p>
+<div class="table-wrap" th:unless="${#lists.isEmpty(others)}">
+    <table>
+        <thead>
+        <tr><th>When</th><th>Client</th><th>Phone</th><th>Service</th><th>Status</th><th>Note</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="b : ${others}">
+            <td th:text="${#temporals.format(b.requestedTime, 'EEE d MMM yyyy, HH:mm')}"></td>
+            <td th:text="${b.clientName}"></td>
+            <td th:text="${b.phone}"></td>
+            <td th:text="${b.service}"></td>
+            <td th:text="${b.status}"></td>
+            <td th:text="${b.stylistNote}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<form th:action="@{/logout}" method="post" style="margin-top: 2rem;">
     <button type="submit">Log out</button>
 </form>
 </body>
