@@ -88,4 +88,19 @@ public class Booking {
     public void setProposedTime(LocalDateTime proposedTime) {
         this.proposedTime = proposedTime;
     }
+    public void confirm(String note){
+        requirePending();
+        this.status = BookingStatus.CONFIRMED;
+        this.stylistNote = note;
+    }
+    public void reject(String reason){
+        requirePending();
+        this.status = BookingStatus.REJECTED;
+        this.stylistNote = reason;
+    }
+    private void requirePending(){
+        if(status != BookingStatus.PENDING){
+            throw new IllegalArgumentException("This booking is no longer pending");
+        }
+    }
 }

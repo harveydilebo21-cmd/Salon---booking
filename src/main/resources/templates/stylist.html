@@ -5,22 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Stylist dashboard</title>
     <style>
-        body { font-family: sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+        body { font-family: sans-serif; max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
         .table-wrap { overflow-x: auto; }
         table { border-collapse: collapse; width: 100%; }
-        th, td { text-align: left; padding: .5rem; border-bottom: 1px solid #ddd; }
+        th, td { text-align: left; padding: .5rem; border-bottom: 1px solid #ddd; vertical-align: top; }
         .muted { color: #666; }
+        .ok { background: #e6f4ea; color: #1e5b2e; padding: .6rem; }
+        .err { background: #fdecea; color: #b00020; padding: .6rem; }
+        .decision form { margin-bottom: .5rem; }
+        .decision input { width: 100%; box-sizing: border-box; padding: .3rem; margin-bottom: .2rem; }
     </style>
 </head>
 <body>
 <h1>Stylist dashboard</h1>
+
+<p class="ok" th:if="${message}" th:text="${message}"></p>
+<p class="err" th:if="${error}" th:text="${error}"></p>
 
 <h2>Pending requests</h2>
 <p class="muted" th:if="${#lists.isEmpty(pending)}">No pending requests.</p>
 <div class="table-wrap" th:unless="${#lists.isEmpty(pending)}">
     <table>
         <thead>
-        <tr><th>When</th><th>Client</th><th>Phone</th><th>Service</th></tr>
+        <tr><th>When</th><th>Client</th><th>Phone</th><th>Service</th><th>Decision</th></tr>
         </thead>
         <tbody>
         <tr th:each="b : ${pending}">
@@ -28,6 +35,16 @@
             <td th:text="${b.clientName}"></td>
             <td th:text="${b.phone}"></td>
             <td th:text="${b.service}"></td>
+            <td class="decision">
+                <form th:action="@{/stylist/bookings/{id}/confirm(id=${b.id})}" method="post">
+                    <input type="text" name="note" maxlength="255" placeholder="Optional note for the client">
+                    <button type="submit">Confirm</button>
+                </form>
+                <form th:action="@{/stylist/bookings/{id}/reject(id=${b.id})}" method="post">
+                    <input type="text" name="reason" maxlength="255" required placeholder="Reason (required)">
+                    <button type="submit">Reject</button>
+                </form>
+            </td>
         </tr>
         </tbody>
     </table>
