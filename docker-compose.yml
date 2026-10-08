@@ -9,6 +9,25 @@ services:
       - "5432:5432"
     volumes:
       - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U salon -d salon"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/salon
+      SPRING_DATASOURCE_USERNAME: salon
+      SPRING_DATASOURCE_PASSWORD: salon_dev_password
+      STYLIST_PASSWORD: ${STYLIST_PASSWORD:-dev-only-change-me}
+      TZ: Africa/Johannesburg
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   dbdata:
