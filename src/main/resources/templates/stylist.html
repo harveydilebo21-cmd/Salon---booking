@@ -44,6 +44,11 @@
                     <input type="text" name="reason" maxlength="255" required placeholder="Reason (required)">
                     <button type="submit">Reject</button>
                 </form>
+                <form th:action="@{/stylist/bookings/{id}/propose(id=${b.id})}" method="post">
+                    <input type="datetime-local" name="proposedTime" required>
+                    <input type="text" name="reason" maxlength="255" required placeholder="Reason for new time (required)">
+                    <button type="submit">Propose new time</button>
+                </form>
             </td>
         </tr>
         </tbody>
@@ -55,7 +60,7 @@
 <div class="table-wrap" th:unless="${#lists.isEmpty(others)}">
     <table>
         <thead>
-        <tr><th>When</th><th>Client</th><th>Phone</th><th>Service</th><th>Status</th><th>Note</th></tr>
+        <tr><th>When</th><th>Client</th><th>Phone</th><th>Service</th><th>Status</th><th>Note</th><th>Proposed time</th></tr>
         </thead>
         <tbody>
         <tr th:each="b : ${others}">
@@ -65,6 +70,7 @@
             <td th:text="${b.service}"></td>
             <td th:text="${b.status}"></td>
             <td th:text="${b.stylistNote}"></td>
+            <td th:text="${b.proposedTime != null ? #temporals.format(b.proposedTime, 'EEE d MMM yyyy, HH:mm') : ''}"></td>
         </tr>
         </tbody>
     </table>

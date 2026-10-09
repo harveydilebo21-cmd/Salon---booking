@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class BookingController {
@@ -51,9 +52,38 @@ public class BookingController {
 
     @GetMapping("/status/{token}")
     public String status(@PathVariable String token, Model model) {
-        Booking booking = bookingRepository.findByToken(token)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        model.addAttribute("booking", booking);
+        model.addAttribute("booking", findByToken(token));
         return "status";
+    }
+
+    @PostMapping("/status/{token}/accept")
+    public String accept(@PathVariable String token, RedirectAttributes redirect) {
+        Booking booking = findByToken(token);
+        try {
+            booking.acceptProposedTime();
+            bookingRepository.save(booking);
+            redirect.addFlashAttribute("message", "Thank you, your booking is confirmed for the new time.");
+        } catch (IllegalStateException e) {
+            redirect.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/status/" + token;
+    }
+
+    @PostMapping("/status/{token}/decline")
+    public String decline(@PathVariable String token, RedirectAttributes redirect) {
+        Booking booking = findByToken(token);
+        try {
+            booking.declineProposedTime();
+            bookingRepository.save(booking);
+            redirect.addFlashAttribute("message", "You have declined the new time. The booking is canceled.");
+        } catch (IllegalStateException e) {
+            redirect.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/status/" + token;
+    }
+
+    private Booking findByToken(String token) {
+        return bookingRepository.findByToken(token)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 }

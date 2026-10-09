@@ -103,4 +103,26 @@ public class Booking {
             throw new IllegalArgumentException("This booking is no longer pending");
         }
     }
+    public void proposeNewTime(LocalDateTime newTime, String reason){
+        requirePending();
+        this.requestedTime =this.proposedTime;
+        this.proposedTime = null;
+        this.status = BookingStatus.CONFIRMED;
+    }
+    public void acceptProposedTime(){
+        requireProposed();
+        this.requestedTime = this.proposedTime;
+        this.proposedTime = null;
+        this.status = BookingStatus.CONFIRMED;
+    }
+    public void declineProposedTime(){
+        requireProposed();
+        this.status = BookingStatus.CANCELED;
+    }
+    private void requireProposed(){
+        if(status != BookingStatus.NEW_TIME_PROPOSED) {
+            throw new IllegalArgumentException("There is no proposed time to respond to.");
+        }
+    }
+
 }
