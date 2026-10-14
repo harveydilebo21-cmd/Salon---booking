@@ -1,46 +1,50 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Book an appointment</title>
-    <style>
-        body { font-family: sans-serif; max-width: 420px; margin: 2rem auto; padding: 0 1rem; }
-        label { display: block; margin-top: 1rem; }
-        input, select { width: 100%; padding: .5rem; box-sizing: border-box; }
-        button { margin-top: 1.5rem; padding: .7rem 1.2rem; }
-        .error { color: #b00020; font-size: .85rem; }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/app.js}" defer></script>
 </head>
 <body>
-<h1>Book an appointment</h1>
+<header th:replace="~{fragments :: header}"></header>
+<main>
+    <div class="card">
+        <h1>Book an appointment</h1>
+        <p class="muted">Choose a service and a time. The salon will confirm, suggest another time, or let you know if it isn't possible.</p>
 
-<form th:action="@{/book}" th:object="${bookingForm}" method="post">
+        <form th:action="@{/book}" th:object="${bookingForm}" method="post">
+            <div class="field">
+                <label for="clientName">Your name</label>
+                <input type="text" id="clientName" th:field="*{clientName}" autocomplete="name">
+                <div class="field-error" th:if="${#fields.hasErrors('clientName')}" th:errors="*{clientName}"></div>
+            </div>
 
-    <label>Your name
-        <input type="text" th:field="*{clientName}">
-    </label>
-    <div class="error" th:if="${#fields.hasErrors('clientName')}" th:errors="*{clientName}"></div>
+            <div class="field">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" th:field="*{phone}" autocomplete="tel">
+                <div class="field-error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+            </div>
 
-    <label>Phone
-        <input type="tel" th:field="*{phone}">
-    </label>
-    <div class="error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+            <div class="field">
+                <label for="service">Service</label>
+                <select id="service" th:field="*{service}">
+                    <option value="">Choose a service</option>
+                    <option th:each="s : ${services}" th:value="${s}" th:text="${s}"></option>
+                </select>
+                <div class="field-error" th:if="${#fields.hasErrors('service')}" th:errors="*{service}"></div>
+            </div>
 
-    <label>Service
-        <select th:field="*{service}">
-            <option value="">Choose a service</option>
-            <option th:each="s : ${services}" th:value="${s}" th:text="${s}"></option>
-        </select>
-    </label>
-    <div class="error" th:if="${#fields.hasErrors('service')}" th:errors="*{service}"></div>
+            <div class="field">
+                <label for="requestedTime">Preferred date and time</label>
+                <input type="datetime-local" id="requestedTime" th:field="*{requestedTime}">
+                <div class="field-error" th:if="${#fields.hasErrors('requestedTime')}" th:errors="*{requestedTime}"></div>
+            </div>
 
-    <label>Preferred date and time
-        <input type="datetime-local" th:field="*{requestedTime}">
-    </label>
-    <div class="error" th:if="${#fields.hasErrors('requestedTime')}" th:errors="*{requestedTime}"></div>
-
-    <button type="submit">Request booking</button>
-</form>
+            <button type="submit">Request booking</button>
+        </form>
+    </div>
+</main>
 </body>
 </html>

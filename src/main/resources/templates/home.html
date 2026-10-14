@@ -4,10 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Salon Bookings</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/app.js}" defer></script>
 </head>
 <body>
-<h1>Salon Bookings</h1>
-<p><a th:href="@{/book}">Book an appointment</a></p>
-<p><a th:href="@{/login}">Stylist login</a></p>
+<header th:replace="~{fragments :: header}"></header>
+<main>
+    <section class="hero">
+        <h1>Book your next appointment</h1>
+        <p class="muted">Request a time online. No account needed.</p>
+        <div class="actions">
+            <a class="btn" th:href="@{/book}">Book an appointment</a>
+            <a class="btn btn-secondary" th:href="@{/login}">Stylist login</a>
+        </div>
+    </section>
+</main>
 </body>
 </html>
