@@ -1,17 +1,57 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Your booking</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/app.js}" defer></script>
 </head>
-<body style="font-family: sans-serif; max-width: 420px; margin: 2rem auto; padding: 0 1rem;">
-<h1>Your booking</h1>
-<p><strong th:text="${booking.clientName}"></strong> - <span th:text="${booking.service}"></span></p>
-<p>Requested: <span th:text="${#temporals.format(booking.requestedTime, 'EEE d MMM yyyy, HH:mm')}"></span></p>
-<p>Status: <strong th:text="${booking.status}"></strong></p>
-<p th:if="${booking.stylistNote}">Note from the salon: <span th:text="${booking.stylistNote}"></span></p>
-<p>Bookmark this page to check back later.</p>
-<p><a th:href="@{/}">Back to home</a></p>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<main>
+    <div class="card">
+        <h1>Your booking</h1>
+
+        <p class="alert ok" th:if="${message}" th:text="${message}"></p>
+        <p class="alert err" th:if="${error}" th:text="${error}"></p>
+
+        <p>
+            <span class="badge"
+                  th:classappend="${'badge-' + #strings.toLowerCase(booking.status.name())}"
+                  th:text="${#strings.replace(#strings.capitalize(#strings.toLowerCase(booking.status.name())), '_', ' ')}"></span>
+        </p>
+
+        <dl class="details">
+            <dt>Name</dt>
+            <dd th:text="${booking.clientName}"></dd>
+            <dt>Service</dt>
+            <dd th:text="${booking.service}"></dd>
+            <dt>Time</dt>
+            <dd th:text="${#temporals.format(booking.requestedTime, 'EEE d MMM yyyy, HH:mm')}"></dd>
+        </dl>
+
+        <p th:if="${booking.stylistNote}">
+            <strong>Note from the salon:</strong>
+            <span th:text="${booking.stylistNote}"></span>
+        </p>
+
+        <div class="proposal" th:if="${booking.status.name() == 'NEW_TIME_PROPOSED'}">
+            <p>The salon suggests a different time:
+                <strong th:text="${#temporals.format(booking.proposedTime, 'EEE d MMM yyyy, HH:mm')}"></strong></p>
+            <div class="inline-actions">
+                <form th:action="@{/status/{token}/accept(token=${booking.token})}" method="post">
+                    <button type="submit">Accept new time</button>
+                </form>
+                <form th:action="@{/status/{token}/decline(token=${booking.token})}" method="post"
+                      data-confirm="Decline the new time? The booking will be canceled.">
+                    <button type="submit" class="btn-secondary">Decline new time</button>
+                </form>
+            </div>
+        </div>
+
+        <p class="muted">Bookmark this page to check back later.</p>
+    </div>
+</main>
 </body>
 </html>
