@@ -1,5 +1,10 @@
 package com.salon.booking;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,18 +14,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import java.time.LocalDateTime;
-import org.springframework.format.annotation.DateTimeFormat;
-
 
 @Controller
 public class StylistController {
 
-    private static final int MAX_NOTE_LENGTH =255;
-    private final BookingRepository bookingRepository;
+    private static final int MAX_NOTE_LENGTH = 255;
 
-    public StylistController(BookingRepository bookingRepository) {
+    private final BookingRepository bookingRepository;
+    private final AvailabilityService availability;
+
+    public StylistController(BookingRepository bookingRepository, AvailabilityService availability) {
         this.bookingRepository = bookingRepository;
+        this.availability = availability;
     }
 
     @GetMapping("/login")
@@ -30,50 +35,72 @@ public class StylistController {
 
     @GetMapping("/stylist")
     public String dashboard(Model model) {
-        model.addAttribute("pending",
-                bookingRepository.findByStatusOrderByRequestedTimeAsc(BookingStatus.PENDING));
+        List<Booking> pending =
+                bookingRepository.findByStatusOrderByRequestedTimeAsc(BookingStatus.PENDING);
+
+        // Ids of pending requests that overlap a confirmed booking, so the page can warn her
+        Set<Long> clashing = pending.stream()
+                .filter(b -> !availability.isFree(b.getRequestedTime(), b.getService(), b.getId()))
+                .map(Booking::getId)
+                .collect(Collectors.toSet());
+
+        model.addAttribute("pending", pending);
+        model.addAttribute("clashing", clashing);
         model.addAttribute("others",
                 bookingRepository.findByStatusNotOrderByRequestedTimeAsc(BookingStatus.PENDING));
         return "stylist";
     }
+
     @PostMapping("/stylist/bookings/{id}/confirm")
-    public String Confirm(@PathVariable Long id,
+    public String confirm(@PathVariable Long id,
                           @RequestParam(defaultValue = "") String note,
-                          RedirectAttributes redirect){
+                          RedirectAttributes redirect) {
         String cleaned = note.trim();
-        if(cleaned.length() > MAX_NOTE_LENGTH){
-            redirect.addFlashAttribute("error","The note is too long (maximum 255 characters).");
+        if (cleaned.length() > MAX_NOTE_LENGTH) {
+            redirect.addFlashAttribute("error", "The note is too long (maximum 255 characters).");
             return "redirect:/stylist";
         }
         Booking booking = findBooking(id);
-        try{
+        if (booking.getStatus() == BookingStatus.PENDING
+                && !availability.isFree(booking.getRequestedTime(), booking.getService(), booking.getId())) {
+            redirect.addFlashAttribute("error",
+                    "That time overlaps a confirmed booking. Suggest a new time or reject the request.");
+            return "redirect:/stylist";
+        }
+        try {
             booking.confirm(cleaned.isEmpty() ? null : cleaned);
             bookingRepository.save(booking);
-            redirect.addFlashAttribute("message","Booking confirmed");
-        } catch (IllegalStateException e){
-            redirect.addFlashAttribute("error",e.getMessage());
+            redirect.addFlashAttribute("message", "Booking confirmed.");
+        } catch (IllegalStateException e) {
+            redirect.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/stylist";
     }
+
     @PostMapping("/stylist/bookings/{id}/reject")
     public String reject(@PathVariable Long id,
                          @RequestParam(defaultValue = "") String reason,
-                         RedirectAttributes redirect){
+                         RedirectAttributes redirect) {
         String cleaned = reason.trim();
-        if(cleaned.isEmpty()){
-            redirect.addFlashAttribute("error","The reason is too long (maximum 255 characters).");
+        if (cleaned.isEmpty()) {
+            redirect.addFlashAttribute("error", "Please give a reason when rejecting a booking.");
+            return "redirect:/stylist";
+        }
+        if (cleaned.length() > MAX_NOTE_LENGTH) {
+            redirect.addFlashAttribute("error", "The reason is too long (maximum 255 characters).");
             return "redirect:/stylist";
         }
         Booking booking = findBooking(id);
-        try{
+        try {
             booking.reject(cleaned);
             bookingRepository.save(booking);
-            redirect.addFlashAttribute("message","Booking rejected.");
-        }catch (IllegalStateException e){
-            redirect.addFlashAttribute("error",e.getMessage());
+            redirect.addFlashAttribute("message", "Booking rejected.");
+        } catch (IllegalStateException e) {
+            redirect.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/stylist";
     }
+
     @PostMapping("/stylist/bookings/{id}/propose")
     public String propose(@PathVariable Long id,
                           @RequestParam(required = false)
@@ -91,6 +118,12 @@ public class StylistController {
             return "redirect:/stylist";
         }
         Booking booking = findBooking(id);
+        if (booking.getStatus() == BookingStatus.PENDING
+                && !availability.isFree(proposedTime, booking.getService(), booking.getId())) {
+            redirect.addFlashAttribute("error",
+                    "You already have a confirmed booking at that time. Choose another time.");
+            return "redirect:/stylist";
+        }
         try {
             booking.proposeNewTime(proposedTime, cleaned);
             bookingRepository.save(booking);
@@ -102,8 +135,7 @@ public class StylistController {
         return "redirect:/stylist";
     }
 
-
-    private Booking findBooking(Long id){
+    private Booking findBooking(Long id) {
         return bookingRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }

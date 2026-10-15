@@ -17,14 +17,16 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class BookingController {
 
     private final BookingRepository bookingRepository;
+    private final AvailabilityService availability;
 
-    public BookingController(BookingRepository bookingRepository) {
+    public BookingController(BookingRepository bookingRepository, AvailabilityService availability) {
         this.bookingRepository = bookingRepository;
+        this.availability = availability;
     }
 
     @ModelAttribute("services")
     public List<String> services() {
-        return List.of("Haircut", "Colour", "Braids", "Styling");
+        return ServiceCatalog.names();
     }
 
     @GetMapping("/book")
@@ -36,6 +38,11 @@ public class BookingController {
     @PostMapping("/book")
     public String submit(@Valid @ModelAttribute("bookingForm") BookingForm form,
                          BindingResult result) {
+        // The dropdown only offers real services, but anyone can send any text,
+        // so the server checks the value itself.
+        if (!result.hasFieldErrors("service") && !ServiceCatalog.names().contains(form.getService())) {
+            result.rejectValue("service", "service.invalid", "Please choose a service from the list");
+        }
         if (result.hasErrors()) {
             return "book";
         }
@@ -59,6 +66,13 @@ public class BookingController {
     @PostMapping("/status/{token}/accept")
     public String accept(@PathVariable String token, RedirectAttributes redirect) {
         Booking booking = findByToken(token);
+        // Someone else may have been confirmed into that slot since it was proposed
+        if (booking.getStatus() == BookingStatus.NEW_TIME_PROPOSED
+                && !availability.isFree(booking.getProposedTime(), booking.getService(), booking.getId())) {
+            redirect.addFlashAttribute("error",
+                    "Sorry, that time has just been taken. Please contact the salon to find another time.");
+            return "redirect:/status/" + token;
+        }
         try {
             booking.acceptProposedTime();
             bookingRepository.save(booking);
