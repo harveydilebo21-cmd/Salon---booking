@@ -34,6 +34,9 @@
                 <span th:text="${b.service}"></span><br>
                 <a th:href="${'tel:' + b.phone}" th:text="${b.phone}"></a>
             </p>
+            <p class="alert err" th:if="${clashing.contains(b.id)}">
+                This time overlaps a confirmed booking.
+            </p>
 
             <details>
                 <summary>Confirm</summary>
