@@ -88,41 +88,57 @@ public class Booking {
     public void setProposedTime(LocalDateTime proposedTime) {
         this.proposedTime = proposedTime;
     }
-    public void confirm(String note){
+
+
+
+    public void confirm(String note) {
         requirePending();
+        requireNotInPast(requestedTime);
         this.status = BookingStatus.CONFIRMED;
         this.stylistNote = note;
     }
-    public void reject(String reason){
+
+    public void reject(String reason) {
         requirePending();
         this.status = BookingStatus.REJECTED;
         this.stylistNote = reason;
     }
-    private void requirePending(){
-        if(status != BookingStatus.PENDING){
-            throw new IllegalArgumentException("This booking is no longer pending");
-        }
-    }
-    public void proposeNewTime(LocalDateTime newTime, String reason){
+
+    public void proposeNewTime(LocalDateTime newTime, String reason) {
         requirePending();
-        this.requestedTime =this.proposedTime;
-        this.proposedTime = null;
-        this.status = BookingStatus.CONFIRMED;
+        this.status = BookingStatus.NEW_TIME_PROPOSED;
+        this.proposedTime = newTime;
+        this.stylistNote = reason;
     }
-    public void acceptProposedTime(){
+
+    public void acceptProposedTime() {
         requireProposed();
+        requireNotInPast(proposedTime);
         this.requestedTime = this.proposedTime;
         this.proposedTime = null;
         this.status = BookingStatus.CONFIRMED;
     }
-    public void declineProposedTime(){
+
+    public void declineProposedTime() {
         requireProposed();
         this.status = BookingStatus.CANCELED;
     }
-    private void requireProposed(){
-        if(status != BookingStatus.NEW_TIME_PROPOSED) {
-            throw new IllegalArgumentException("There is no proposed time to respond to.");
+
+    private void requirePending() {
+        if (status != BookingStatus.PENDING) {
+            throw new IllegalStateException("This booking is no longer pending.");
         }
     }
 
+    private void requireProposed() {
+        if (status != BookingStatus.NEW_TIME_PROPOSED) {
+            throw new IllegalStateException("There is no proposed time to respond to.");
+        }
+    }
+
+    private void requireNotInPast(LocalDateTime time) {
+        if (time.isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("That time has already passed.");
+        }
+    }
 }

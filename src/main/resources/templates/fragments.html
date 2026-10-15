@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
+
+<!-- Site header, used on every page -->
 <header class="site" th:fragment="header">
     <div class="inner">
         <a class="brand" th:href="@{/}">Salon Bookings</a>
@@ -10,5 +12,33 @@
         </nav>
     </div>
 </header>
+
+<!-- A table of bookings. The list to show is passed in as 'rows'. -->
+<div class="table-wrap" th:fragment="bookingTable(rows)">
+    <table>
+        <thead>
+        <tr>
+            <th>Time</th><th>Client</th><th>Phone</th><th>Service</th>
+            <th>Status</th><th>Note</th><th>Proposed time</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="b : ${rows}">
+            <td th:text="${#temporals.format(b.requestedTime, 'EEE d MMM yyyy, HH:mm')}"></td>
+            <td th:text="${b.clientName}"></td>
+            <td><a th:href="${'tel:' + b.phone}" th:text="${b.phone}"></a></td>
+            <td th:text="${b.service}"></td>
+            <td>
+                <span class="badge"
+                      th:classappend="${'badge-' + #strings.toLowerCase(b.status.name())}"
+                      th:text="${#strings.replace(#strings.capitalize(#strings.toLowerCase(b.status.name())), '_', ' ')}"></span>
+            </td>
+            <td th:text="${b.stylistNote}"></td>
+            <td th:text="${b.proposedTime != null ? #temporals.format(b.proposedTime, 'EEE d MMM yyyy, HH:mm') : ''}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
 </body>
 </html>
