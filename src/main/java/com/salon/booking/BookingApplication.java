@@ -1,6 +1,5 @@
 package com.salon.booking;
 
-import jdk.jfr.Enabled;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -9,8 +8,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class BookingApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(BookingApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(BookingApplication.class, args);
+    }
 
 }

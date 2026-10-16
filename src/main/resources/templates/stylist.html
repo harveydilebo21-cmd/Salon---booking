@@ -69,32 +69,22 @@
         </article>
     </div>
 
-    <h2>Other bookings</h2>
-    <p class="muted" th:if="${#lists.isEmpty(others)}">Nothing here yet.</p>
-    <div class="table-wrap" th:unless="${#lists.isEmpty(others)}">
-        <table>
-            <thead>
-            <tr>
-                <th>Time</th><th>Client</th><th>Phone</th><th>Service</th>
-                <th>Status</th><th>Note</th><th>Proposed time</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="b : ${others}">
-                <td th:text="${#temporals.format(b.requestedTime, 'EEE d MMM yyyy, HH:mm')}"></td>
-                <td th:text="${b.clientName}"></td>
-                <td><a th:href="${'tel:' + b.phone}" th:text="${b.phone}"></a></td>
-                <td th:text="${b.service}"></td>
-                <td>
-                    <span class="badge"
-                          th:classappend="${'badge-' + #strings.toLowerCase(b.status.name())}"
-                          th:text="${#strings.replace(#strings.capitalize(#strings.toLowerCase(b.status.name())), '_', ' ')}"></span>
-                </td>
-                <td th:text="${b.stylistNote}"></td>
-                <td th:text="${b.proposedTime != null ? #temporals.format(b.proposedTime, 'EEE d MMM yyyy, HH:mm') : ''}"></td>
-            </tr>
-            </tbody>
-        </table>
+    <h2>Upcoming bookings</h2>
+    <p class="muted" th:if="${#lists.isEmpty(upcoming)}">Nothing upcoming yet.</p>
+    <div th:unless="${#lists.isEmpty(upcoming)}">
+        <div th:replace="~{fragments :: bookingTable(${upcoming})}"></div>
+    </div>
+
+    <details class="past-bookings" th:unless="${#lists.isEmpty(past)}">
+        <summary>Past bookings (<span th:text="${#lists.size(past)}"></span>)</summary>
+        <div th:replace="~{fragments :: bookingTable(${past})}"></div>
+    </details>
+
+    <h2>Calendar link</h2>
+    <p class="muted">Add this address to your calendar app as a subscription. Anyone with the link can see your confirmed bookings, so keep it private.</p>
+    <div class="copy-row">
+        <input type="text" id="calendarUrl" th:value="${calendarUrl}" readonly aria-label="Calendar subscription link">
+        <button type="button" data-copy-target="calendarUrl">Copy link</button>
     </div>
 </main>
 </body>

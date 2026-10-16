@@ -19,7 +19,13 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/book", "/status/**", "/login", "/error", "/css/**", "/js/**").permitAll()                        .requestMatchers("/stylist/**").hasRole("STYLIST")
+                        // Public: the client pages, static files, and the calendar feed
+                        // (the feed protects itself with a secret token in its address)
+                        .requestMatchers("/", "/book", "/status/**", "/login", "/error",
+                                "/css/**", "/js/**", "/calendar/**").permitAll()
+                        // Stylist only
+                        .requestMatchers("/stylist/**").hasRole("STYLIST")
+                        // Deny by default: anything not listed above is blocked
                         .anyRequest().denyAll())
                 .formLogin(form -> form
                         .loginPage("/login")

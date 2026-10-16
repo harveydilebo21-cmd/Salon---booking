@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: salon
       POSTGRES_PASSWORD: salon_dev_password
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - dbdata:/var/lib/postgresql/data
     healthcheck:
@@ -23,7 +23,9 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/salon
       SPRING_DATASOURCE_USERNAME: salon
       SPRING_DATASOURCE_PASSWORD: salon_dev_password
-      STYLIST_PASSWORD: ${STYLIST_PASSWORD:-dev-only-change-me}
+      STYLIST_USERNAME: ${STYLIST_USERNAME:-stylist}
+      STYLIST_PASSWORD: ${STYLIST_PASSWORD:?Set STYLIST_PASSWORD in the .env file}
+      CALENDAR_TOKEN: ${CALENDAR_TOKEN:?Set CALENDAR_TOKEN in the .env file}
       TZ: Africa/Johannesburg
     depends_on:
       db:
@@ -31,4 +33,3 @@ services:
 
 volumes:
   dbdata:
-

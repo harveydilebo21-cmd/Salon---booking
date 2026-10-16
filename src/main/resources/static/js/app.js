@@ -32,6 +32,21 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.alert.ok').forEach(el => {
     setTimeout(() => el.classList.add('hide'), 5000);
   });
+
+  // 5. Copy buttons: <button data-copy-target="inputId">
+  document.querySelectorAll('[data-copy-target]').forEach(button => {
+    button.addEventListener('click', async () => {
+      const input = document.getElementById(button.dataset.copyTarget);
+      try {
+        await navigator.clipboard.writeText(input.value);
+        button.textContent = 'Copied';
+      } catch (e) {
+        input.select();
+        button.textContent = 'Press Ctrl+C';
+      }
+      setTimeout(() => { button.textContent = 'Copy link'; }, 2000);
+    });
+  });
 });
 
 // If the user presses Back, reload so buttons are not stuck on "Please wait..."

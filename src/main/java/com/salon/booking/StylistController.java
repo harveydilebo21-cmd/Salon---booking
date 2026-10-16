@@ -1,9 +1,11 @@
 package com.salon.booking;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Controller
 public class StylistController {
@@ -22,10 +25,14 @@ public class StylistController {
 
     private final BookingRepository bookingRepository;
     private final AvailabilityService availability;
+    private final String calendarToken;
 
-    public StylistController(BookingRepository bookingRepository, AvailabilityService availability) {
+    public StylistController(BookingRepository bookingRepository,
+                             AvailabilityService availability,
+                             @Value("${salon.calendar.token}") String calendarToken) {
         this.bookingRepository = bookingRepository;
         this.availability = availability;
+        this.calendarToken = calendarToken;
     }
 
     @GetMapping("/login")
@@ -35,6 +42,8 @@ public class StylistController {
 
     @GetMapping("/stylist")
     public String dashboard(Model model) {
+        LocalDateTime now = LocalDateTime.now();
+
         List<Booking> pending =
                 bookingRepository.findByStatusOrderByRequestedTimeAsc(BookingStatus.PENDING);
 
@@ -44,10 +53,25 @@ public class StylistController {
                 .map(Booking::getId)
                 .collect(Collectors.toSet());
 
+        // Everything that is not pending, split into upcoming (soonest first) and past (newest first)
+        List<Booking> others =
+                bookingRepository.findByStatusNotOrderByRequestedTimeAsc(BookingStatus.PENDING);
+        List<Booking> upcoming = others.stream()
+                .filter(b -> !b.getRequestedTime().isBefore(now))
+                .toList();
+        List<Booking> past = others.stream()
+                .filter(b -> b.getRequestedTime().isBefore(now))
+                .sorted(Comparator.comparing(Booking::getRequestedTime).reversed())
+                .toList();
+
         model.addAttribute("pending", pending);
         model.addAttribute("clashing", clashing);
-        model.addAttribute("others",
-                bookingRepository.findByStatusNotOrderByRequestedTimeAsc(BookingStatus.PENDING));
+        model.addAttribute("upcoming", upcoming);
+        model.addAttribute("past", past);
+        model.addAttribute("calendarUrl", ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/calendar/{token}/bookings.ics")
+                .buildAndExpand(calendarToken)
+                .toUriString());
         return "stylist";
     }
 
