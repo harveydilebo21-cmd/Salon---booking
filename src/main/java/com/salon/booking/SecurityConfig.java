@@ -22,7 +22,7 @@ public class SecurityConfig {
                         // Public: the client pages, static files, and the calendar feed
                         // (the feed protects itself with a secret token in its address)
                         .requestMatchers("/", "/book", "/status/**", "/login", "/error",
-                                "/css/**", "/js/**", "/calendar/**").permitAll()
+                                "/css/**", "/js/**", "/images/**", "/terms", "/calendar/**").permitAll()
                         // Stylist only
                         .requestMatchers("/stylist/**").hasRole("STYLIST")
                         // Deny by default: anything not listed above is blocked
