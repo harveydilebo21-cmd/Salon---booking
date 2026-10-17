@@ -27,7 +27,7 @@ public final class CalendarFeed {
         line(sb, "PRODID:-//Salon Bookings//Booking feed//EN");
         line(sb, "CALSCALE:GREGORIAN");
         line(sb, "METHOD:PUBLISH");
-        line(sb, "X-WR-CALNAME:Salon bookings");
+        line(sb, "X-WR-CALNAME:Makwena Salon");
 
         String stamp = ZonedDateTime.now(ZoneOffset.UTC).format(UTC_STAMP);
         for (Booking b : bookings) {
