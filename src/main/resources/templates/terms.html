@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Terms and privacy</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/app.js}" defer></script>
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<main>
+    <article class="prose">
+        <h1>Terms and privacy</h1>
+        <p class="muted">Last updated: <mark>[date]</mark></p>
+
+        <!--
+          STARTING TEMPLATE, NOT LEGAL ADVICE.
+          Every <mark>[bracket]</mark> must be replaced with the salon's real policy, and the
+          stylist should read the whole page and change anything that is not how she works.
+        -->
+
+        <h2>Bookings</h2>
+        <p>Booking through this website is a <strong>request</strong>. Your appointment is only confirmed when
+            we confirm it, or when you accept a different time that we suggest. You can see the status of your
+            booking at any time on your private booking page.</p>
+
+        <h2>Changes and cancellations</h2>
+        <p>Please give us at least <mark>[24 hours]</mark> notice if you need to cancel or change your appointment,
+            by calling or messaging us. <mark>[Describe what happens with late cancellations and missed
+                appointments, for example a cancellation fee or a deposit for future bookings.]</mark></p>
+
+        <h2>Arriving late</h2>
+        <p>If you arrive more than <mark>[15 minutes]</mark> late, we may need to shorten your service or
+            rebook you, so that we do not affect the next client.</p>
+
+        <h2>Prices and payment</h2>
+        <p>Prices depend on the service and on your hair. We will confirm the price <mark>[when you book / at
+            your appointment]</mark>. We accept <mark>[cash, card, EFT]</mark>.</p>
+
+        <h2>Colour and chemical treatments</h2>
+        <p>For your safety, we may ask you to have a patch test <mark>[48 hours]</mark> before a colour or
+            chemical treatment, especially on your first visit. Please tell us about any allergies, skin
+            conditions or earlier reactions. We may decline a service if we believe it is not safe for you.</p>
+
+        <h2>Photos</h2>
+        <p>We only take photos of your hair for our portfolio or social media if you agree first.</p>
+
+        <h2>Privacy: what we collect and why</h2>
+        <p>When you request a booking we ask for your <strong>name</strong>, <strong>phone number</strong>, the
+            <strong>service</strong> you want and your <strong>preferred date and time</strong>. We use this only to
+            manage your booking and to contact you about it.</p>
+        <ul>
+            <li><strong>Who sees it:</strong> only the stylist. Your booking page is private and can be opened
+                only with its own long, random link.</li>
+            <li><strong>Calendar:</strong> confirmed bookings, including your name and phone number, appear in the
+                stylist's own calendar through a private link.</li>
+            <li><strong>How long we keep it:</strong> your booking is deleted automatically
+                10 days after your appointment time.</li>
+            <li><strong>Sharing:</strong> we do not sell your information or use it for advertising. We only share it
+                if the law requires us to.</li>
+            <li><strong>Where it is stored:</strong> on a server run by <mark>[hosting provider and country]</mark>.</li>
+            <li><strong>Cookies:</strong> we only use the essential cookies this website needs to work securely. We
+                do not use tracking or advertising cookies.</li>
+        </ul>
+        <p>You can ask us to show you, correct or delete your information at any time by contacting us.</p>
+
+        <h2>Changes to these terms</h2>
+        <p>We may update these terms from time to time. The date at the top shows when they last changed.</p>
+
+        <h2>Contact us</h2>
+        <p>Questions about these terms? Call
+            <a th:href="${'tel:' + #strings.replace(@business.phone, ' ', '')}" th:text="${@business.phone}"></a>
+            or email <a th:href="${'mailto:' + @business.email}" th:text="${@business.email}"></a>.</p>
+    </article>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

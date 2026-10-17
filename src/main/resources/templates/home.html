@@ -1,23 +1,103 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Salon Bookings</title>
+    <title th:text="${@business.name}">Salon</title>
+    <meta name="description" th:content="${@business.tagline}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <script th:src="@{/js/app.js}" defer></script>
 </head>
 <body>
 <header th:replace="~{fragments :: header}"></header>
+
+<section class="hero-photo">
+    <h1 th:text="${@business.name}">Salon</h1>
+    <p class="lead" th:text="${@business.tagline}"></p>
+    <div class="actions">
+        <a class="btn btn-light" th:href="@{/book}">Book an appointment</a>
+        <a class="btn btn-outline-light"
+           th:href="${'tel:' + #strings.replace(@business.phone, ' ', '')}">Call us</a>
+    </div>
+</section>
+
 <main>
-    <section class="hero">
-        <h1>Book your next appointment</h1>
-        <p class="muted">Request a time online. No account needed.</p>
-        <div class="actions">
-            <a class="btn" th:href="@{/book}">Book an appointment</a>
-            <a class="btn btn-secondary" th:href="@{/login}">Stylist login</a>
+    <section class="section" id="about" th:unless="${#strings.isEmpty(@business.about)}">
+        <h2>About us</h2>
+        <p class="lead prose-narrow" th:text="${@business.about}"></p>
+    </section>
+
+    <section class="section" id="services">
+        <h2>Our services</h2>
+        <div class="service-grid">
+            <article class="service" th:each="s : ${services}">
+                <h3 th:text="${s.name()}"></h3>
+                <p class="duration">About <span th:text="${s.duration()}"></span></p>
+            </article>
+        </div>
+        <p class="muted">Not sure which service you need? Call us and we will help you choose.</p>
+    </section>
+
+    <section class="section" id="how">
+        <h2>How booking works</h2>
+        <div class="steps">
+            <div class="step">
+                <h3>1. Request a time</h3>
+                <p>Choose a service and a date that suits you. It takes less than a minute, and you do not need an account.</p>
+            </div>
+            <div class="step">
+                <h3>2. We reply</h3>
+                <p>We confirm your booking, or suggest a different time if that slot is taken.</p>
+            </div>
+            <div class="step">
+                <h3>3. Check any time</h3>
+                <p>After booking you get a private page with the status of your booking. Bookmark it to check back.</p>
+            </div>
+        </div>
+        <p><a class="btn" th:href="@{/book}">Request an appointment</a></p>
+    </section>
+
+    <section class="section" id="gallery" th:unless="${#lists.isEmpty(@business.gallery)}">
+        <h2>Our work</h2>
+        <div class="gallery">
+            <img th:each="g, iter : ${@business.gallery}"
+                 th:src="@{|/images/${g}|}"
+                 th:alt="${'Hair styling by ' + @business.name + ', photo ' + iter.count}"
+                 loading="lazy" width="400" height="400">
+        </div>
+    </section>
+
+    <section class="section" id="visit">
+        <h2>Visit us</h2>
+        <div class="visit">
+            <div>
+                <h3>Address</h3>
+                <p th:text="${@business.address}"></p>
+                <p><a th:href="@{https://www.google.com/maps/search/(api=1,query=${@business.address})}"
+                      target="_blank" rel="noopener">Get directions</a></p>
+            </div>
+            <div>
+                <h3>Opening hours</h3>
+                <ul class="plain">
+                    <li th:each="h : ${@business.hours}" th:text="${h}"></li>
+                </ul>
+            </div>
+            <div>
+                <h3>Get in touch</h3>
+                <ul class="plain">
+                    <li><a th:href="${'tel:' + #strings.replace(@business.phone, ' ', '')}"
+                           th:text="${@business.phone}"></a></li>
+                    <li th:unless="${#strings.isEmpty(@business.whatsapp)}">
+                        <a th:href="${'https://wa.me/' + @business.whatsapp}" target="_blank" rel="noopener">WhatsApp us</a></li>
+                    <li><a th:href="${'mailto:' + @business.email}" th:text="${@business.email}"></a></li>
+                    <li th:unless="${#strings.isEmpty(@business.instagram)}">
+                        <a th:href="${@business.instagram}" target="_blank" rel="noopener">Instagram</a></li>
+                </ul>
+            </div>
         </div>
     </section>
 </main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
 </body>
 </html>
