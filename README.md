@@ -28,14 +28,14 @@ Bookings for  my neighbour regularly get mixed up, which means confused clients 
 I'm building this one small step at a time and committing daily.
 
 - [x] Project skeleton with home page
-- [ ] Booking model and database
-- [ ] Booking request form
-- [ ] Status page for clients
-- [ ] Docker setup
-- [ ] Stylist login and dashboard
-- [ ] Confirm, reject and propose a new time
-- [ ] Double-booking check
-- [ ] Calendar feed
+- [x] Booking model and database
+- [x] Booking request form
+- [x] Status page for clients
+- [x] Docker setup
+- [x] Stylist login and dashboard
+- [x] Confirm, reject and propose a new time
+- [x] Double-booking check
+- [x] Calendar feed
 - [ ] Deployment
 
 
