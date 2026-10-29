@@ -10,6 +10,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 public class BookingForm {
 
+
+
     @NotBlank(message = "Please enter your name")
     @Size(max = 100, message = "Name is too long")
     private String clientName;
