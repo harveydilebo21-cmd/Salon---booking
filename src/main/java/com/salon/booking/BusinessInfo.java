@@ -1,5 +1,7 @@
 package com.salon.booking;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -53,4 +55,26 @@ public class BusinessInfo {
 
     public List<String> getGallery() { return gallery; }
     public void setGallery(List<String> gallery) { this.gallery = gallery; }
+
+    // ----- Ready-made links, so the templates only read a value and never build one -----
+
+    /** tel: link containing only digits and a leading plus, so spaces and dashes do not matter. */
+    public String getPhoneLink() {
+        return "tel:" + phone.replaceAll("[^0-9+]", "");
+    }
+
+    public String getEmailLink() {
+        return "mailto:" + email;
+    }
+
+    /** WhatsApp link: digits only, in international format (no plus, no leading zero). */
+    public String getWhatsappLink() {
+        return "https://wa.me/" + whatsapp.replaceAll("[^0-9]", "");
+    }
+
+    /** Opens the address in Google Maps. */
+    public String getDirectionsLink() {
+        return "https://www.google.com/maps/search/?api=1&query="
+                + URLEncoder.encode(address, StandardCharsets.UTF_8);
+    }
 }

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title th:text="${@business.name}">Salon</title>
-    <meta name="description" th:content="${@business.tagline}">
+    <title th:text="${business.name}">Salon</title>
+    <meta name="description" th:content="${business.tagline}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <script th:src="@{/js/app.js}" defer></script>
 </head>
@@ -12,19 +12,19 @@
 <header th:replace="~{fragments :: header}"></header>
 
 <section class="hero-photo">
-    <h1 th:text="${@business.name}">Salon</h1>
-    <p class="lead" th:text="${@business.tagline}"></p>
+    <h1 th:text="${business.name}">Salon</h1>
+    <p class="lead" th:text="${business.tagline}"></p>
     <div class="actions">
         <a class="btn btn-light" th:href="@{/book}">Book an appointment</a>
         <a class="btn btn-outline-light"
-           th:href="${'tel:' + #strings.replace(@business.phone, ' ', '')}">Call us</a>
+           th:href="${business.phoneLink}">Call us</a>
     </div>
 </section>
 
 <main>
-    <section class="section" id="about" th:unless="${#strings.isEmpty(@business.about)}">
+    <section class="section" id="about" th:unless="${#strings.isEmpty(business.about)}">
         <h2>About us</h2>
-        <p class="lead prose-narrow" th:text="${@business.about}"></p>
+        <p class="lead prose-narrow" th:text="${business.about}"></p>
     </section>
 
     <section class="section" id="services">
@@ -57,12 +57,12 @@
         <p><a class="btn" th:href="@{/book}">Request an appointment</a></p>
     </section>
 
-    <section class="section" id="gallery" th:unless="${#lists.isEmpty(@business.gallery)}">
+    <section class="section" id="gallery" th:unless="${#lists.isEmpty(business.gallery)}">
         <h2>Our work</h2>
         <div class="gallery">
-            <img th:each="g, iter : ${@business.gallery}"
+            <img th:each="g, iter : ${business.gallery}"
                  th:src="@{|/images/${g}|}"
-                 th:alt="${'Hair styling by ' + @business.name + ', photo ' + iter.count}"
+                 th:alt="${'Hair styling by ' + business.name + ', photo ' + iter.count}"
                  loading="lazy" width="400" height="400">
         </div>
     </section>
@@ -72,26 +72,26 @@
         <div class="visit">
             <div>
                 <h3>Address</h3>
-                <p th:text="${@business.address}"></p>
-                <p><a th:href="@{https://www.google.com/maps/search/(api=1,query=${@business.address})}"
+                <p th:text="${business.address}"></p>
+                <p><a th:href="${business.directionsLink}"
                       target="_blank" rel="noopener">Get directions</a></p>
             </div>
             <div>
                 <h3>Opening hours</h3>
                 <ul class="plain">
-                    <li th:each="h : ${@business.hours}" th:text="${h}"></li>
+                    <li th:each="h : ${business.hours}" th:text="${h}"></li>
                 </ul>
             </div>
             <div>
                 <h3>Get in touch</h3>
                 <ul class="plain">
-                    <li><a th:href="${'tel:' + #strings.replace(@business.phone, ' ', '')}"
-                           th:text="${@business.phone}"></a></li>
-                    <li th:unless="${#strings.isEmpty(@business.whatsapp)}">
-                        <a th:href="${'https://wa.me/' + @business.whatsapp}" target="_blank" rel="noopener">WhatsApp us</a></li>
-                    <li><a th:href="${'mailto:' + @business.email}" th:text="${@business.email}"></a></li>
-                    <li th:unless="${#strings.isEmpty(@business.instagram)}">
-                        <a th:href="${@business.instagram}" target="_blank" rel="noopener">Instagram</a></li>
+                    <li><a th:href="${business.phoneLink}"
+                           th:text="${business.phone}"></a></li>
+                    <li th:unless="${#strings.isEmpty(business.whatsapp)}">
+                        <a th:href="${business.whatsappLink}" target="_blank" rel="noopener">WhatsApp us</a></li>
+                    <li><a th:href="${business.emailLink}" th:text="${business.email}"></a></li>
+                    <li th:unless="${#strings.isEmpty(business.instagram)}">
+                        <a th:href="${business.instagram}" target="_blank" rel="noopener">Instagram</a></li>
                 </ul>
             </div>
         </div>

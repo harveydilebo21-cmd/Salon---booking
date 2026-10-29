@@ -71,8 +71,8 @@
 
         <h2>Contact us</h2>
         <p>Questions about these terms? Call
-            <a th:href="${'tel:' + #strings.replace(@business.phone, ' ', '')}" th:text="${@business.phone}"></a>
-            or email <a th:href="${'mailto:' + @business.email}" th:text="${@business.email}"></a>.</p>
+            <a th:href="${business.phoneLink}" th:text="${business.phone}"></a>
+            or email <a th:href="${business.emailLink}" th:text="${business.email}"></a>.</p>
     </article>
 </main>
 <footer th:replace="~{fragments :: footer}"></footer>

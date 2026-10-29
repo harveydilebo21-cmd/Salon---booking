@@ -5,7 +5,7 @@
 <!-- Site header, used on every page -->
 <header class="site" th:fragment="header">
     <div class="inner">
-        <a class="brand" th:href="@{/}" th:text="${@business.name}">Salon</a>
+        <a class="brand" th:href="@{/}" th:text="${business.name}">Salon</a>
         <nav>
             <a th:href="@{/#services}">Services</a>
             <a th:href="@{/#visit}">Visit us</a>
@@ -19,12 +19,12 @@
 <footer class="site-footer" th:fragment="footer">
     <div class="inner">
         <div>
-            <strong th:text="${@business.name}"></strong>
-            <p th:text="${@business.address}"></p>
+            <strong th:text="${business.name}"></strong>
+            <p th:text="${business.address}"></p>
         </div>
         <div>
-            <p><a th:href="${'tel:' + #strings.replace(@business.phone, ' ', '')}" th:text="${@business.phone}"></a></p>
-            <p><a th:href="${'mailto:' + @business.email}" th:text="${@business.email}"></a></p>
+            <p><a th:href="${business.phoneLink}" th:text="${business.phone}"></a></p>
+            <p><a th:href="${business.emailLink}" th:text="${business.email}"></a></p>
         </div>
         <div>
             <p><a th:href="@{/book}">Book an appointment</a></p>
